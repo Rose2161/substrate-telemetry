@@ -17,8 +17,8 @@
 # - The latest matching rule, if multiple, takes precedence.
 
 # main codeowner @paritytech/tools-team
-* @paritytech/tools-team
+@rose2161, aisharose2161@gmail.com
 
 # CI
 /.github/ @paritytech/ci @paritytech/tools-team
-/.gitlab-ci.yml @paritytech/ci @arshamparity
+/.gitlab-ci.yml @paritytech/ci
