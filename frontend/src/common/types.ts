@@ -25,6 +25,15 @@ export type NodeId = Id<'Node'>;
 export type NodeName = Opaque<string, 'NodeName'>;
 export type NodeImplementation = Opaque<string, 'NodeImplementation'>;
 export type NodeVersion = Opaque<string, 'NodeVersion'>;
+export type OperatingSystem = Opaque<string, 'OperatingSystem'>;
+export type CpuArchitecture = Opaque<string, 'CpuArchitecture'>;
+export type Cpu = string;
+export type CpuCores = number;
+export type TargetEnv = string;
+export type Memory = number;
+export type VirtualMachine = boolean;
+export type LinuxKernel = string;
+export type LinuxDistro = string;
 export type BlockNumber = Opaque<number, 'BlockNumber'>;
 export type BlockHash = Opaque<string, 'BlockHash'>;
 export type Address = Opaque<string, 'Address'>;
@@ -43,6 +52,15 @@ export type Bytes = Opaque<number, 'Bytes'>;
 export type BytesPerSecond = Opaque<number, 'BytesPerSecond'>;
 export type NetworkId = Opaque<string, 'NetworkId'>;
 
+export type NodeSysInfo = {
+  cpu: string;
+  memory: number;
+  core_count: number;
+  linux_kernel: string;
+  linux_distro: string;
+  is_virtual_machine: boolean;
+};
+
 export type BlockDetails = [
   BlockNumber,
   BlockHash,
@@ -56,8 +74,13 @@ export type NodeDetails = [
   NodeVersion,
   Maybe<Address>,
   Maybe<NetworkId>,
-  Maybe<string>
+  OperatingSystem,
+  CpuArchitecture,
+  TargetEnv,
+  undefined,
+  NodeSysInfo
 ];
+
 export type NodeStats = [PeerCount, TransactionCount];
 export type NodeIO = [Array<Bytes>];
 export type NodeHardware = [
@@ -108,6 +131,7 @@ export type ChainStats = {
   linux_distro: Maybe<Ranking<string>>;
   linux_kernel: Maybe<Ranking<string>>;
   cpu_hashrate_score: Maybe<Ranking<Range>>;
+  parallel_cpu_hashrate_score: Maybe<Ranking<Range>>;
   memory_memcpy_score: Maybe<Ranking<Range>>;
   disk_sequential_write_score: Maybe<Ranking<Range>>;
   disk_random_write_score: Maybe<Ranking<Range>>;

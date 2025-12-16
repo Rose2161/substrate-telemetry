@@ -269,7 +269,6 @@ export class Connection {
 
         case ACTIONS.NodeStats: {
           const [id, nodeStats] = message.payload;
-
           nodes.mutAndMaybeSort(
             id,
             (node) => node.updateStats(nodeStats),
@@ -363,6 +362,11 @@ export class Connection {
 
         case ACTIONS.ChainStatsUpdate: {
           this.appUpdate({ chainStats: message.payload });
+          break;
+        }
+
+        case ACTIONS.TelemetryInfo: {
+          this.appUpdate({ gitHash: message.payload.git_hash });
           break;
         }
 
