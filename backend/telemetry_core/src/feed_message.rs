@@ -25,6 +25,10 @@ use common::node_types::{
 };
 use serde_json::to_writer;
 
+/// The version of the feed messages. This should be incremented
+/// on the backend and frontend when the feed API changes.
+pub const FEED_VERSION: usize = 33;
+
 type FeedNodeId = usize;
 
 pub trait FeedMessage {
@@ -123,6 +127,7 @@ actions! {
     20: StaleNode,
     21: NodeIOUpdate<'_>,
     22: ChainStatsUpdate<'_>,
+    23: TelemetryInfo,
 }
 
 #[derive(Serialize)]
@@ -183,12 +188,18 @@ impl FeedMessageWrite for AddedNode<'_> {
         let AddedNode(nid, node, expose_node_details) = self;
 
         let details = node.details();
-        // Hide the ip, sysinfo and hwbench if the `expose_node_details` flag was not specified.
+        // Always include sysinfo, conditionally include ip and hwbench based on expose_node_details.
         let node_hwbench = node.hwbench();
-        let (ip, sys_info, hwbench) = if *expose_node_details {
-            (&details.ip, &details.sysinfo, &node_hwbench)
+        let ip = if *expose_node_details {
+            &details.ip
         } else {
-            (&None, &None, &None)
+            &None
+        };
+        let sys_info = &details.sysinfo;
+        let hwbench = if *expose_node_details {
+            &node_hwbench
+        } else {
+            &None
         };
 
         let details = (
@@ -197,6 +208,9 @@ impl FeedMessageWrite for AddedNode<'_> {
             &details.version,
             &details.validator,
             &details.network_id,
+            &details.target_os,
+            &details.target_arch,
+            &details.target_env,
             &ip,
             &sys_info,
             &hwbench,
@@ -237,8 +251,14 @@ pub struct ChainStats {
     pub linux_distro: Ranking<String>,
     pub is_virtual_machine: Ranking<bool>,
     pub cpu_hashrate_score: Ranking<(u32, Option<u32>)>,
+    pub parallel_cpu_hashrate_score: Ranking<(u32, Option<u32>)>,
     pub memory_memcpy_score: Ranking<(u32, Option<u32>)>,
     pub disk_sequential_write_score: Ranking<(u32, Option<u32>)>,
     pub disk_random_write_score: Ranking<(u32, Option<u32>)>,
     pub cpu_vendor: Ranking<String>,
+}
+
+#[derive(Serialize)]
+pub struct TelemetryInfo {
+    pub git_hash: &'static str,
 }
